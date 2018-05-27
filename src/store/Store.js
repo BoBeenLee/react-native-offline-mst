@@ -1,13 +1,12 @@
 import { types } from "mobx-state-tree"
-import { NetworkStore, addNetworkMiddleware } from './NetworkStore';
+import { withOfflineStore, addOfflineMiddleware } from '../lib/offline';
 import { TodoStore } from './TodoStore';
 
 const Store = types.model({
-    todoStore: types.optional(TodoStore, {}),
-    networkStore: types.optional(NetworkStore, {})
+    todoStore: types.optional(TodoStore, {})
 });
-
-let store = Store.create();
-addNetworkMiddleware(store.networkStore)(store.todoStore);
+const StorewithOffline = withOfflineStore(Store);
+const store = StorewithOffline.create();
+addOfflineMiddleware(store.offlineStore)(store);
 
 export { store };

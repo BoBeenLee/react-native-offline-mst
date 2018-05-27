@@ -8,19 +8,23 @@ const Container = styled.View`
 
 const RandomButton = styled.Button``;
 
+const ConnectedButton = styled.Button``;
+
 const NormalText = styled.Text``;
 
 @inject("store")
 @observer
 class MainScreen extends Component {
     render() {
-        const { store: { todoStore: { addTodoWithOffline, todos } } } = this.props;
+        const { store: { todoStore: { addTodoWithOffline, todos }, offlineStore: { isConnected, setIsConnected } } } = this.props;
         return (
             <Container>
-                <RandomButton onPress={() => addTodoWithOffline("Test")} title="addTodo" />
+                <RandomButton title="addTodo" onPress={() => addTodoWithOffline("Test")} />
                 {_.map(todos, (todo, index) => {
                     return <NormalText key={index}>{todo.name}</NormalText>
                 })}
+
+                <ConnectedButton title={`${isConnected ? 'online' : 'offline'}`} onPress={() => setIsConnected(!isConnected)} />
             </Container>
         );
     }

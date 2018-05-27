@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree"
-import { networkStore, addNetworkMiddleware, withOfflineArgs } from './NetworkStore';
+import { withOfflineArgs } from '../lib/offline';
 
 const Todo = types.model({
     name: "",
