@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { reaction, autorun } from 'mobx';
-import { types, addMiddleware, onAction, applyAction, unprotect, getRoot, addDisposer } from "mobx-state-tree"
+import { types, flow, addMiddleware, onAction, applyAction, addDisposer } from "mobx-state-tree"
+import { delay } from 'bluebird';
+
 
 /**
  * TODO 
@@ -40,7 +42,7 @@ const Offline = types.model({
     isConnected: types.optional(types.boolean, true),
     actionQueue: types.optional(types.array(types.frozen), []),
     timeout: types.optional(types.number, 3000),
-    checkInterval: types.optional(types.number, 3000),
+    queueInterval: types.optional(types.number, 1000),
     retryCount: types.optional(types.number, 1)
 }).actions(self => {
     const addActionQueue = (call, next) => {
@@ -48,19 +50,16 @@ const Offline = types.model({
             call, next
         });
     };
-    const callActionQueue = () => {
-        unprotect(getRoot(self));
-        if (self.actionQueue.length === 0) {
-            return;
-        }
+    const callActionQueue = flow(function* () {
         let restActionQueue = self.actionQueue.peek();
         while (restActionQueue.length !== 0) {
             const { call, next } = restActionQueue.shift();
-            console.log(restActionQueue, call, next);
+            // console.log(restActionQueue, call, next);
+            yield delay(self.queueInterval);
             callActionWithRetry(call, next, self.retryCount);
         }
         self.actionQueue = [];
-    }
+    });
 
     const afterCreate = () => {
         const connectedDisposer = reaction(() => self.isConnected,
