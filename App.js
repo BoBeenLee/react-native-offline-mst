@@ -4,6 +4,9 @@ import { Provider } from "mobx-react/native";
 
 import MainScreen from './src/screens/MainScreen';
 import { store } from './src/store/Store';
+import { setupReactotron } from './ReactotronConfig';
+
+setupReactotron(store);
 
 export default class App extends React.Component {
   render() {
